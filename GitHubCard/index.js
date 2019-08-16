@@ -20,7 +20,6 @@ const container = document.querySelector('.cards')
 //   .catch(err => {
 //     return err
 //   })
-let followers = []
 axios.get('https://api.github.com/users/iancarreras')
   .then(res => {
     container.appendChild(createUserCard(res.data))
@@ -29,16 +28,16 @@ axios.get('https://api.github.com/users/iancarreras')
   .then(res => {
     axios.get(`${res.data.followers_url}`)
       .then(res => {
-        res.data.forEach(follower => followers.push(follower.url))
+        res.data.forEach(follower => {
+          axios.get(`${follower.url}`)
+          .then(res => {
+            container.appendChild(createUserCard(res.data))
+            return res
+          })
+        })
         return res        
       })
     return res
-  })
-  .then(res => {
-    console.log(followers['0'])
-    followers.forEach(url => {
-      console.log(url)
-    })
   })
   .catch(err => {
     return err
