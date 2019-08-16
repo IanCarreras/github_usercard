@@ -2,6 +2,47 @@
            (replacing the palceholder with your Github name):
            https://api.github.com/users/<your name>
 */
+const container = document.querySelector('.cards')
+// axios.get('https://api.github.com/users/iancarreras')
+//   .then(res => {
+//     container.appendChild(createUserCard(res.data))
+//     axios.get(`${res.data.followers_url}`)
+//       .then(res => {
+//         let followers = res.data
+//         console.log(followers[0].url)
+//         followers.forEach(follower => {
+//           container.appendChild(createUserCard(follower))
+//           return res
+//         })
+//       })
+//     return res
+//   })
+//   .catch(err => {
+//     return err
+//   })
+let followers = []
+axios.get('https://api.github.com/users/iancarreras')
+  .then(res => {
+    container.appendChild(createUserCard(res.data))
+    return res
+  })
+  .then(res => {
+    axios.get(`${res.data.followers_url}`)
+      .then(res => {
+        res.data.forEach(follower => followers.push(follower.url))
+        return res        
+      })
+    return res
+  })
+  .then(res => {
+    console.log(followers['0'])
+    followers.forEach(url => {
+      console.log(url)
+    })
+  })
+  .catch(err => {
+    return err
+  })
 
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
@@ -24,7 +65,17 @@
           user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+// const followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell'];
+// followersArray.forEach(follower => {
+//   axios.get(`https://api.github.com/users/${follower}`)
+//     .then(res => {
+//       let card = createUserCards(res.data)
+//       container.appendChild(card)
+//     })
+//     .catch(err => {
+//       return err
+//     })    
+// })
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
@@ -45,6 +96,41 @@ const followersArray = [];
 </div>
 
 */
+const createUserCard = (data) => {
+  const cardDiv = document.createElement('div')
+  const img = document.createElement('img')
+  const cardInfoDiv = document.createElement('div')
+  const h3 = document.createElement('h3')
+  const pTypes = ['username', 'location', 'profile', 'followers', 'following', 'bio']
+  const pTags = pTypes.map(type => {
+    return type = document.createElement('p')
+  })
+
+  cardDiv.classList.add('card')
+  img.src = `${data.avatar_url}`
+  cardInfoDiv.classList.add('card-info')
+  h3.classList.add('name')
+  h3.innerText = `${data.name}`
+  pTags[0].classList.add('usename')
+  pTags[0].innerText = data.login
+  pTags[1].innerText = 'Location: ' + data.location 
+  pTags[2].innerHTML = `
+    Profile: 
+    <a href='${data.html_url}'>${data.html_url}</a>
+  `
+  pTags[3].innerText = 'Followers: ' + data.followers
+  pTags[4].innerText = 'Following: ' + data.following
+  pTags[5].innerText = 'Bio: ' + data.bio
+
+  cardInfoDiv.appendChild(h3)
+  pTags.forEach(tag => {
+    cardInfoDiv.appendChild(tag)
+  })
+  cardDiv.appendChild(img)
+  cardDiv.appendChild(cardInfoDiv)
+  return cardDiv
+}
+
 
 /* List of LS Instructors Github username's: 
   tetondan
